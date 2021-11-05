@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-function App() {
+import { Dashboard } from './admin/dashboard'
+import { LoginPage } from './pages/auth/loginPage'
+
+import { createTheme, ThemeProvider } from '@mui/material';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#494949',
+    },
+    secondary: {
+      main: '#FF5D73',
+    },
+    error: {
+      main: '#f44336',
+    },
+    divider: '#7C7A7A',
+  },
+})
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/*" element={<LoginPage />} caseSensitive />
+          <Route path="/admin/*" element={<Dashboard />} caseSensitive />
+          
+          <Route path='*' element={<Navigate to='/' />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
+  )
 }
 
 export default App;
