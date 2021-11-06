@@ -25,9 +25,8 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/*" element={<LoginPage />} caseSensitive />
-          <Route path="/admin/*" element={<Dashboard />} caseSensitive />
-          
+          <Route path="/*" element={<LoginPage />} />
+          <Route path="/admin/*" element={<Dashboard />} />
           <Route path='*' element={<Navigate to='/' />} />
         </Routes>
       </BrowserRouter>
