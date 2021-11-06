@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-import { Dashboard } from './admin/dashboard'
 import { LoginPage } from './pages/auth/loginPage'
 
 import { createTheme, ThemeProvider } from '@mui/material';
@@ -26,7 +25,6 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/*" element={<LoginPage />} />
-          <Route path="/admin/*" element={<Dashboard />} />
           <Route path='*' element={<Navigate to='/' />} />
         </Routes>
       </BrowserRouter>
