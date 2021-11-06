@@ -1,7 +1,6 @@
 import * as React from 'react'
 
-import { styled, createTheme } from '@mui/material/styles'
-
+import { styled } from '@mui/material/styles'
 import { Routes, Route } from 'react-router-dom'
 
 import {
@@ -20,10 +19,6 @@ import {
 import MenuIcon from '@mui/icons-material/Menu'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import NotificationsIcon from '@mui/icons-material/Notifications'
-
-import {
-	Menu, ChevronLeft, Notifications,
-} from '@mui/icons-material'
 
 const drawerWidth = 240;
 
@@ -70,8 +65,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 		},
 	}),
 );
-
-const mdTheme = createTheme();
 
 export const Dashboard = () => {
 	const [open, setOpen] = React.useState(true);
@@ -144,7 +137,7 @@ export const Dashboard = () => {
 					<Toolbar />
 					<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
 						<Routes>
-							<Route path="antiques"/>
+							<Route path="antiques" />
 						</Routes>
 					</Container>
 				</Box>
