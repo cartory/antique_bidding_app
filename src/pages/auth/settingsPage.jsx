@@ -1,15 +1,15 @@
 import {
+	Box, Paper,
 	InputAdornment,
 	Typography, Grid,
 	TextField, CssBaseline, Button,
-	Box, Paper, Link, Checkbox, FormControlLabel,
 } from '@mui/material'
 
 import {
 	AttachMoney
 } from '@mui/icons-material'
 
-import robo_square from '../antiques/robo_hand.svg'
+import robo_square from '../../assets/robo_hand.svg'
 
 export const SettingsPage = () => {
 	return (

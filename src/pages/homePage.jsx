@@ -1,4 +1,4 @@
-import logo from '../logo.svg'
+import logo from '../assets/logo.svg'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 
 import {

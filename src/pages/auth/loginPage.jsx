@@ -1,5 +1,5 @@
 import * as React from 'react';
-import bidSquare from './bid_square.svg'
+import bidSquare from '../../assets/bid_square.svg'
 
 import { useNavigate } from 'react-router-dom'
 
