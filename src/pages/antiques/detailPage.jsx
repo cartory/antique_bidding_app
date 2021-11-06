@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
@@ -9,12 +10,7 @@ import {
 	TextField,
 	Typography,
 	CssBaseline,
-	InputAdornment,
 } from '@mui/material'
-
-import {
-	AttachMoney
-} from '@mui/icons-material'
 
 export const DetailPage = () => {
 	const { id } = useParams()
@@ -24,28 +20,25 @@ export const DetailPage = () => {
 
 	useEffect(() => {
 		const antiques = require('./antiques.json')
-		const antique = antiques.find(a => a.productId === id)
-		
-		console.log(antique, antiques.find(a => a.productId == id))
-		setAntique(antiques.find(a => a.productId == id))
-	}, [id])
+		const antique = antiques.find(a => a.productId == id)
+		setAntique(antique)
+		!antique && navigate('/home', { replace: true })
+	}, [id, navigate])
 
-	console.log(antique);
-	!antique && navigate('/home', { replace: true })
 	return (
 		<Box component="main" sx={{ flexGrow: 1, p: 0, paddingTop: 5 }}>
 			<CssBaseline />
-			<Grid container component="main" sx={{ height: '93vh' }} square>
+			<Grid container component="main" sx={{ height: '93vh' }}>
 				<Grid
 					item
 					xs={false}
 					sm={4}
 					md={7}
 					sx={{
-						backgroundSize: '75%',
+						backgroundSize: 'fit',
 						backgroundPosition: 'center',
 						backgroundRepeat: 'no-repeat',
-						backgroundImage: `url(${'antique.productImage'})`,
+						backgroundImage: `url(${antique?.productImage})`,
 						backgroundColor: (t) => t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
 					}}
 				/>
@@ -77,9 +70,6 @@ export const DetailPage = () => {
 								variant="standard"
 								type="tel"
 								style={{ padding: 0 }}
-								InputProps={{
-									startAdornment: <InputAdornment position="start" children={[<AttachMoney key='bid' />]} />
-								}}
 							/>
 							<br />
 							<br />
@@ -94,9 +84,6 @@ export const DetailPage = () => {
 								type="tel"
 								variant="standard"
 								style={{ padding: 0 }}
-								InputProps={{
-									endAdornment: <InputAdornment children={[<p key='text' style={{ fontWeight: 'bolder', fontSize: '110%' }} children={['%']} />]} />
-								}}
 							/>
 							<Button
 								type="submit"
