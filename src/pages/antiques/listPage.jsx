@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import {
 	Box,
@@ -21,6 +21,8 @@ import {
 
 import { Link } from 'react-router-dom'
 
+import { useFetchAPI } from '../../hooks/useFetch'
+
 const drawerWidth = 240;
 
 const marks = [
@@ -28,22 +30,6 @@ const marks = [
 	{ value: 50, label: '50$' },
 	{ value: 100, label: '100$' },
 ]
-
-const useFetchAPI = ({ endpoint = "", query = {} }) => {
-	const [data, setData] = useState([])
-
-	Object.keys(query).forEach((k, index) => {
-		endpoint += (index === 0 ? '?' : '&') + `${k}=${query[k]}`
-	})
-	endpoint = `${process.env.REACT_APP_API}/api/${endpoint}`
-	useEffect(() => {
-		fetch(endpoint)
-			.then(async res => setData(await res.json()))
-			.catch(err => console.error(err))
-	}, [endpoint])
-
-	return [data, setData]
-}
 
 export const ListPage = () => {
 	const [filter, setFilter] = useState({
