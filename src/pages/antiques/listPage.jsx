@@ -20,7 +20,6 @@ import {
 } from '@mui/material'
 
 import { Link } from 'react-router-dom'
-
 import { useFetchAPI } from '../../hooks/useFetch'
 
 const drawerWidth = 240;
@@ -32,13 +31,12 @@ const marks = [
 ]
 
 export const ListPage = () => {
-	const [filter, setFilter] = useState({
-		minimum_bid: 20,
-		category: 'common',
-	})
+	const [filter, setFilter] = useState({ Categoryid: 2, startPrice: 20 })
 
 	const [categories] = useFetchAPI({ endpoint: 'categories' })
-	const antiques = require('./antiques.json')
+	const [antiques] = useFetchAPI({
+		endpoint: 'antiques', query: filter, delayInMilliseconds: 200
+	})
 
 	return (
 		<>
@@ -64,22 +62,22 @@ export const ListPage = () => {
 							marks={marks}
 							min={10} max={100}
 							valueLabelDisplay='auto'
-							value={filter.minimum_bid}
-							onChange={({ target }) => { setFilter({ ...filter, minimum_bid: target.value }) }}
+							value={filter.startPrice}
+							onChange={({ target }) => setFilter({ ...filter, startPrice: target.value })}
 						/>
 					</Container>
 					<br />
 					<Container>
-						<FormControl onChange={({ target }) => setFilter({ ...filter, category: target.value })}>
+						<FormControl onChange={({ target }) => setFilter({ ...filter, Categoryid: target.value })}>
 							<br />
 							<FormLabel component="legend">Category</FormLabel>
 							<RadioGroup
 								aria-label="category"
-								defaultValue="common"
+								defaultValue={filter.Categoryid}
 								name="radio-buttons-group"
 							>
-								{categories?.map(({ name }) => {
-									return <FormControlLabel key={name} value={name} control={<Radio color="secondary" />} label={name} />
+								{categories?.map(({ id, name }) => {
+									return <FormControlLabel key={id} value={id} control={<Radio color="secondary" />} label={name} />
 								})}
 							</RadioGroup>
 						</FormControl>
@@ -101,20 +99,22 @@ export const ListPage = () => {
 							>
 								<img
 									loading='lazy'
-									src={antique.productImage}
-									alt={antique.productName}
+									src={antique.photoUrl}
+									alt={antique.name}
 									style={{ borderRadius: 25 }}
 								/>
 								<ImageListItemBar
-									title={antique.productName}
-									subtitle={antique.productName}
+									title={<>
+										<strong>{`$${antique.startPrice}`}</strong>{`-${antique.name}`}
+									</>}
+									subtitle={antique.description}
 									style={{
 										textOverflow: 'clip',
 										borderBottomRightRadius: 25, borderBottomLeftRadius: 25,
 									}}
 									actionIcon={
 										<Link
-											to={`/detail/${antique.productId}`}
+											to={`/detail/${antique.id}`}
 											style={{ textDecoration: 'none' }}
 											children={[
 												<Button
