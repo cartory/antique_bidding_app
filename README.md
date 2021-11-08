@@ -1,5 +1,5 @@
 # Antique Bidding App
-Antique Bidding App - Frontend, build with `javascript` `react`. You can see the backend site [here](https://github.com/cartory/antique-bidding-back.git)
+Antique Bidding App - Frontend, build with `javascript` `react`. You can see the backend side [here](https://github.com/cartory/antique-bidding-back.git)
 
 ## Entity Relationship Diagram 
 ![EDR-VPP](https://media.discordapp.net/attachments/810375634042748948/907357095815446528/Screen_Shot_2021-11-08_at_15.53.05.png)
