@@ -1,3 +1,4 @@
+import { useContext } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import Countdown from 'react-countdown'
@@ -23,15 +24,15 @@ const getLastBid = (antique) => {
 	return antique.user['User_Antique']['lastBid']
 }
 
-export const DetailPage = ({ user }) => {
+export const DetailPage = ({ context }) => {
 	const { id } = useParams()
-
 	const socket = useSocket()
 	const navigate = useNavigate()
+	const user = useContext(context)
 
 	const [antique, setAntique] = useFetchAPI({ endpoint: `antiques/${id}` })
 	!antique && navigate('/home', { replace: true })
-	
+
 	socket.on('lastBid', (antiqueResult) => setAntique(antiqueResult))
 
 	return (
@@ -117,7 +118,7 @@ export const DetailPage = ({ user }) => {
 								control={<Checkbox value="remember" color="secondary" />}
 								label={
 									<p style={{ fontSize: '75%' }}>
-										Activate the <Link to="/settings" color="secondary" style={{ color: '#FF5D73' }} >auto-binding</Link>
+										Activate the <Link to={`/settings/${user.id}`} color="secondary" style={{ color: '#FF5D73' }} >auto-binding</Link>
 									</p>
 								}
 							/>
