@@ -51,7 +51,7 @@ export const HomePage = () => {
 						</Grid>
 						<Grid item md={1} sm={1}>
 							<AvatarGroup max={2}>
-								<Avatar alt={user.name} src={user.photoUrl} sx={{ height: 50, width: 50 }} />
+								<Avatar alt={user?.name} src={user?.photoUrl} sx={{ height: 50, width: 50 }} />
 								<IconButton
 									title='logOut'
 									children={[<Logout color='secondary' key='logout' />]}
