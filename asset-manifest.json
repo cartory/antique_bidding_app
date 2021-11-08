@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.js": "/static/js/main.f41416d2.chunk.js",
+    "main.js.map": "/static/js/main.f41416d2.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.bf76588e.js",
+    "runtime-main.js.map": "/static/js/runtime-main.bf76588e.js.map",
+    "static/js/2.4c746cb1.chunk.js": "/static/js/2.4c746cb1.chunk.js",
+    "static/js/2.4c746cb1.chunk.js.map": "/static/js/2.4c746cb1.chunk.js.map",
+    "static/js/3.c682502c.chunk.js": "/static/js/3.c682502c.chunk.js",
+    "static/js/3.c682502c.chunk.js.map": "/static/js/3.c682502c.chunk.js.map",
+    "index.html": "/index.html",
+    "static/js/2.4c746cb1.chunk.js.LICENSE.txt": "/static/js/2.4c746cb1.chunk.js.LICENSE.txt",
+    "static/media/bid_square.baf0d3cc.svg": "/static/media/bid_square.baf0d3cc.svg",
+    "static/media/logo.e1e74fa5.svg": "/static/media/logo.e1e74fa5.svg",
+    "static/media/robo_hand.22876a0e.svg": "/static/media/robo_hand.22876a0e.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.bf76588e.js",
+    "static/js/2.4c746cb1.chunk.js",
+    "static/js/main.f41416d2.chunk.js"
+  ]
+}
