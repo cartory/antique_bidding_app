@@ -64,7 +64,7 @@ export const SettingsPage = ({ context }) => {
 								size="small"
 								margin="none"
 								name="maximumBidAmount"
-								defaultValue={user['bot']['maximumBidAmount']}
+								defaultValue={user?.bot?.maximumBidAmount ?? 300}
 								variant="standard"
 								style={{ padding: 0 }}
 								onChange={({ target }) => bot[target.name] = target.value}
