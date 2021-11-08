@@ -1,4 +1,5 @@
-import { useContext } from 'react'
+/* eslint-disable react-hooks/rules-of-hooks */
+import { useContext, useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import Countdown from 'react-countdown'
@@ -24,16 +25,64 @@ const getLastBid = (antique) => {
 	return antique.user['User_Antique']['lastBid']
 }
 
+const getIndex = (bots, user, antique) => {
+	if (bots) {
+		return bots.findIndex(({ Userid, Bot_Antique, id }) => {
+			return Userid === user.id && Bot_Antique['Botid'] === id && Bot_Antique['Antiqueid'] === antique.id
+		})
+	}
+
+	return -1
+}
+
 export const DetailPage = ({ context }) => {
 	const { id } = useParams()
 	const socket = useSocket()
 	const navigate = useNavigate()
 	const user = useContext(context)
 
+
 	const [antique, setAntique] = useFetchAPI({ endpoint: `antiques/${id}` })
 	!antique && navigate('/home', { replace: true })
 
-	socket.on('lastBid', (antiqueResult) => setAntique(antiqueResult))
+	const [index, setIndex] = useState(-1)
+
+	useEffect(() => {
+		setIndex(getIndex(antique.bots, user, antique))
+	}, [antique, antique.bots, antique.id, user, user.id])
+
+	socket.on('lastBid', (antiqueResult) => {
+
+		setAntique(antiqueResult)
+
+		if (index >= 0) {
+			// setTimeout(() => {
+			// 	socket.emit('bid', {
+			// 		Userid: user.id,
+			// 		Antiqueid: Number.parseInt(id),
+			// 		endDate: Date.parse(antique?.endDate),
+			// 		price: getLastBid(antique) + 1,
+			// 		maximumBidAmount: 
+			// 	})
+			// }, 1000);
+		}
+	})
+
+	const handleBotCheck = async () => {
+		if (index < 0) {
+			setIndex(getIndex(antique.bots, user, antique))
+		} else {
+			setIndex(-1)
+		}
+		
+		try {
+			let url = `${process.env.REACT_APP_API}/api/bots/${user['bot']['id']}?Antiqueid=${Number.parseInt(id)}`
+			const res = await fetch(url)
+			console.log(await res.json())
+		} catch (err) {
+			console.error(err);
+		}
+	}
 
 	return (
 		<Box component="main" sx={{ flexGrow: 1, p: 0, paddingTop: 5 }}>
@@ -102,20 +151,23 @@ export const DetailPage = ({ context }) => {
 							<Button
 								fullWidth
 								variant="contained"
-								children={['Place a Bid +5$']}
+								children={['Place a Bid +1$']}
 								sx={{ mt: 3, mb: 2, textTransform: 'capitalize' }}
 								onClick={() => {
 									socket.emit('bid', {
 										Userid: user.id,
 										Antiqueid: Number.parseInt(id),
 										endDate: Date.parse(antique?.endDate),
-										price: getLastBid(antique) + 5,
+										price: getLastBid(antique) + 1,
 									})
 								}}
 							/>
 							<br />
 							<FormControlLabel
-								control={<Checkbox value="remember" color="secondary" />}
+								name='check'
+								checked={index >= 0}
+								control={<Checkbox color="secondary" />}
+								onChange={handleBotCheck}
 								label={
 									<p style={{ fontSize: '75%' }}>
 										Activate the <Link to={`/settings/${user.id}`} color="secondary" style={{ color: '#FF5D73' }} >auto-binding</Link>
