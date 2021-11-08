@@ -1,34 +1,73 @@
-import * as React from 'react';
-import bidSquare from '../../assets/bid_square.svg'
-
+/* eslint-disable react-hooks/rules-of-hooks */
 import { useNavigate } from 'react-router-dom'
 
 import {
+	Google,
+	LockOutlined,
+} from '@mui/icons-material'
+
+import {
 	Typography, Grid,
-	Box, Paper, Link, Checkbox, FormControlLabel, TextField, CssBaseline, Button, Avatar
+	Box, Paper, CssBaseline, Button, Avatar
 } from '@mui/material'
 
-import { LockOutlined } from '@mui/icons-material'
+import bidSquare from '../../assets/bid_square.svg'
+
+import {
+	getAuth,
+	signInWithPopup,
+	GoogleAuthProvider,
+} from 'firebase/auth'
+
+import { initializeApp } from 'firebase/app'
 
 import { HomePage } from '../homePage'
+import { usePostAPI } from '../../hooks/useFetch'
+
+const firebaseConfig = {
+	apiKey: "AIzaSyCglHy4McDNoddDzE8m4AhUM5mn9_rIyvs",
+	authDomain: "binding-app-scopic.firebaseapp.com",
+	projectId: "binding-app-scopic",
+	storageBucket: "binding-app-scopic.appspot.com",
+	messagingSenderId: "365292781659",
+	appId: "1:365292781659:web:48faf0e16f2065b6073f7e"
+};
+
+const googleSignIn = async () => {
+	const auth = getAuth()
+	const googleProvider = new GoogleAuthProvider()
+
+	try {
+		const res = await signInWithPopup(auth, googleProvider)
+		const credential = GoogleAuthProvider.credentialFromResult(res)
+
+		const apiRes = await usePostAPI({
+			endpoint: 'users',
+			body: {
+				email: res.user.email,
+				name: res.user.displayName,
+				photoUrl: res.user.photoURL,
+			},
+		})
+
+		sessionStorage.setItem('user', JSON.stringify(apiRes))
+		sessionStorage.setItem('token', JSON.stringify({ token: credential.accessToken }))
+
+		return true
+	} catch (err) {
+		console.error(err);
+	}
+
+	return false
+}
 
 export const LoginPage = () => {
+	initializeApp(firebaseConfig)
 	const navigate = useNavigate()
 
-	const handleSubmit = (event) => {
-		event.preventDefault();
-		navigate('/home', { replace: true })
-		// const data = new FormData(event.currentTarget);
-		// console.log(event.currentTarget)
-		// console.log({
-		// 	email: data.get('email'),
-		// 	password: data.get('password'),
-		// });
-	};
+	const user = sessionStorage.getItem('user')
 
-	if (true) {
-		return <HomePage />
-	}
+	if (user) return <HomePage />
 
 	return (
 		<Grid container component="main" sx={{ height: '100vh' }}>
@@ -62,51 +101,24 @@ export const LoginPage = () => {
 					<Typography component="h1" variant="h5">
 						Sign in
 					</Typography>
-					<Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-						<TextField
-							margin="normal"
-							required
-							fullWidth
-							id="email"
-							label="Email Address"
-							name="email"
-							autoComplete="email"
-							autoFocus
-						/>
-						<TextField
-							margin="normal"
-							required
-							fullWidth
-							name="password"
-							label="Password"
-							type="password"
-							id="password"
-							autoComplete="current-password"
-						/>
-						<FormControlLabel
-							control={<Checkbox value="remember" color="secondary" />}
-							label="Remember me"
-						/>
+					<Box sx={{ mt: 1 }}>
 						<Button
-							type="submit"
+							// type="submit"
 							fullWidth
 							variant="contained"
 							sx={{ mt: 3, mb: 2 }}
+							onClick={async () => {
+								const isAuth = await googleSignIn()
+								if (isAuth) {
+									navigate('/home', { replace: true })
+								} else {
+									alert('Oops, Something goes wrong!!')
+								}
+							}}
+							startIcon={<Google />}
 						>
-							Sign In
+							Google Sign In
 						</Button>
-						<Grid container>
-							<Grid item xs>
-								<Link href="#" variant="body2">
-									Forgot password?
-								</Link>
-							</Grid>
-							<Grid item>
-								<Link href="#" variant="body2">
-									{"Don't have an account? Sign Up"}
-								</Link>
-							</Grid>
-						</Grid>
 					</Box>
 				</Box>
 			</Grid>
