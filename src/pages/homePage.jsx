@@ -1,6 +1,8 @@
 import logo from '../assets/logo.svg'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 
+import { createContext } from 'react'
+
 import {
 	Box,
 	Grid,
@@ -26,6 +28,7 @@ export const HomePage = () => {
 	!rawUser && navigate('/', { replace: true })
 
 	const user = JSON.parse(rawUser)
+	const context = createContext(user)
 
 	return (
 		<Box sx={{ display: 'flex' }}>
@@ -44,7 +47,7 @@ export const HomePage = () => {
 							/>
 						</Grid>
 						<Grid item md={1} sm={1}>
-							<h4 style={{ textAlign: 'end', paddingRight: 10 }}>{user.name}</h4>
+							<h4 style={{ textAlign: 'end', paddingRight: 10, textOverflow: 'clip' }}>{user.name}</h4>
 						</Grid>
 						<Grid item md={1} sm={1}>
 							<AvatarGroup max={2}>
@@ -64,11 +67,13 @@ export const HomePage = () => {
 					</Grid>
 				</Toolbar>
 			</AppBar>
-			<Routes>
-				<Route path="home" element={<ListPage />} />
-				<Route path="settings" element={<SettingsPage />} />
-				<Route path="detail/:id" element={<DetailPage />} />
-			</Routes>
+			<context.Provider value={user}>
+				<Routes>
+					<Route path="home" element={<ListPage />} />
+					<Route path="settings/:id" element={<SettingsPage user={user} context={context} />} />
+					<Route path="detail/:id" element={<DetailPage user={user} context={context} />} />
+				</Routes>
+			</context.Provider>
 		</Box>
 	)
 } 
