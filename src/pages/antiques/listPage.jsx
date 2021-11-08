@@ -101,12 +101,10 @@ export const ListPage = () => {
 									loading='lazy'
 									src={antique.photoUrl}
 									alt={antique.name}
-									style={{ borderRadius: 25 }}
+									style={{ borderRadius: 25, objectFit: 'contain'}}
 								/>
 								<ImageListItemBar
-									title={<>
-										<strong>{`$${antique.startPrice}`}</strong>{`-${antique.name}`}
-									</>}
+									title={<><strong>{`$${antique.startPrice}`}</strong>{`-${antique.name}`}</>}
 									subtitle={antique.description}
 									style={{
 										textOverflow: 'clip',
