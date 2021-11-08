@@ -25,16 +25,6 @@ const getLastBid = (antique) => {
 	return antique.user['User_Antique']['lastBid']
 }
 
-const getIndex = (bots, user, antique) => {
-	if (bots) {
-		return bots.findIndex(({ Userid, Bot_Antique, id }) => {
-			return Userid === user.id && Bot_Antique['Botid'] === id && Bot_Antique['Antiqueid'] === antique.id
-		})
-	}
-
-	return -1
-}
-
 export const DetailPage = ({ context }) => {
 	const { id } = useParams()
 	const socket = useSocket()
@@ -45,36 +35,44 @@ export const DetailPage = ({ context }) => {
 	const [antique, setAntique] = useFetchAPI({ endpoint: `antiques/${id}` })
 	!antique && navigate('/home', { replace: true })
 
+	const [checked, setChecked] = useState(false)
 	const [index, setIndex] = useState(-1)
 
 	useEffect(() => {
-		setIndex(getIndex(antique.bots, user, antique))
-	}, [antique, antique.bots, antique.id, user, user.id])
+		const index = antique.bots?.findIndex(({ Userid, Bot_Antique, id }) => {
+			return Userid === user.id && Bot_Antique['Botid'] === id && Bot_Antique['Antiqueid'] === antique.id
+		})
+		setIndex(index)
+		setChecked(index >= 0)
+	}, [antique.bots, antique.id, user.id])
+
+	socket.on('lastBidbot', antiqueResult => { 
+		setAntique(antiqueResult)
+	})
 
 	socket.on('lastBid', (antiqueResult) => {
-
 		setAntique(antiqueResult)
-
-		if (index >= 0) {
+		if (checked && antique?.user?.id !== user?.id) {
+			// bot response
+			console.log('must call bid event');
 			// setTimeout(() => {
 			// 	socket.emit('bid', {
 			// 		Userid: user.id,
 			// 		Antiqueid: Number.parseInt(id),
 			// 		endDate: Date.parse(antique?.endDate),
 			// 		price: getLastBid(antique) + 1,
-			// 		maximumBidAmount: 
+			// 		maximumBidAmount: antique.bots[index].maximumBidAmount
 			// 	})
 			// }, 1000);
 		}
 	})
 
 	const handleBotCheck = async () => {
-		if (index < 0) {
-			setIndex(getIndex(antique.bots, user, antique))
-		} else {
-			setIndex(-1)
-		}
-		
+		setChecked(!checked)
+		const index = antique.bots?.findIndex(({ Userid, Bot_Antique, id }) => {
+			return Userid === user.id && Bot_Antique['Botid'] === id && Bot_Antique['Antiqueid'] === antique.id
+		})
+		setIndex(index ?? -1)
 		try {
 			let url = `${process.env.REACT_APP_API}/api/bots/${user['bot']['id']}?Antiqueid=${Number.parseInt(id)}`
 			const res = await fetch(url)
@@ -165,7 +163,7 @@ export const DetailPage = ({ context }) => {
 							<br />
 							<FormControlLabel
 								name='check'
-								checked={index >= 0}
+								checked={checked}
 								control={<Checkbox color="secondary" />}
 								onChange={handleBotCheck}
 								label={
