@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
+import Countdown from 'react-countdown'
+
 import {
 	Box,
 	Grid,
@@ -13,18 +15,22 @@ import {
 	FormControlLabel,
 } from '@mui/material'
 
+const { useSocket, useFetchAPI } = require('../../hooks/useFetch')
+
 export const DetailPage = () => {
 	const { id } = useParams()
+
+	const socket = useSocket()
 	const navigate = useNavigate()
 
-	const [antique, setAntique] = useState(null)
+	const [antique] = useFetchAPI({ endpoint: `antiques/${id}` })
+	!antique && navigate('/home', { replace: true })
 
-	useEffect(() => {
-		const antiques = require('./antiques.json')
-		const antique = antiques.find(a => a.productId == id)
-		setAntique(antique)
-		!antique && navigate('/home', { replace: true })
-	}, [id, navigate])
+	// socket.on('bid', ({ lastBid }) => {
+	// 	setDate(lastBid)
+	// })
+
+	console.log(antique?.endDate);
 
 	return (
 		<Box component="main" sx={{ flexGrow: 1, p: 0, paddingTop: 5 }}>
@@ -40,7 +46,7 @@ export const DetailPage = () => {
 						backgroundSize: 'contain',
 						backgroundPosition: 'center',
 						backgroundRepeat: 'no-repeat',
-						backgroundImage: `url(${antique?.productImage})`,
+						backgroundImage: `url(${antique?.photoUrl})`,
 						backgroundColor: (t) => t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
 					}}
 				/>
@@ -57,7 +63,7 @@ export const DetailPage = () => {
 							{antique?.productName}
 						</Typography>
 						<legend style={{ color: 'grey', fontSize: '90%', marginTop: 0 }}>
-							Minimum bid ${antique?.productPrice}
+							Minimum bid ${antique?.startPrice}
 						</legend>
 						<Box
 							component="form"
@@ -65,23 +71,28 @@ export const DetailPage = () => {
 						>
 							<p style={{ color: 'grey', fontSize: '80%' }}>
 								<strong style={{ margin: 2, color: 'black' }}>Details</strong><br />
-								The maximum amount will be split between all items where we have we have activated auto-bidding
-								The maximum amount will be split between all items where we have we have activated auto-bidding
-								The maximum amount will be split between all items where we have we have activated auto-bidding
-								The maximum amount will be split between all items where we have we have activated auto-bidding
+								{antique?.description}
 							</p>
 							<br />
 							<Grid container direction="row" justifyContent="space-between">
 								<Grid item>
 									<p style={{ color: 'grey', fontSize: '80%', textAlign: 'start' }}>
 										<strong style={{ margin: 2, color: 'black' }}>Last Bid Made</strong><br />
-										$15
+										{antique?.startPrice}
 									</p>
 								</Grid>
 								<Grid item>
 									<p style={{ color: 'grey', fontSize: '80%', textAlign: 'end' }}>
 										<strong style={{ margin: 2, color: 'black' }}>Available Until</strong><br />
-										2:30:15
+										<Countdown
+											date={new Date(Date.parse(antique?.endDate))}
+											renderer={({ days, hours, minutes, seconds, completed }) => {
+												if (completed) {
+													return <span className="countdown" >Time Out!</span>
+												}
+												return <span className="countdown">{days}d:{hours}h:{minutes}m:{seconds}s</span>
+											}}
+										/>
 									</p>
 								</Grid>
 							</Grid>
@@ -90,6 +101,9 @@ export const DetailPage = () => {
 								variant="contained"
 								children={['Place a Bid']}
 								sx={{ mt: 3, mb: 2, textTransform: 'capitalize' }}
+								onClick={() => {
+									socket.emit('bid', { lastDate: Date.now() })
+								}}
 							/>
 							<br />
 							<FormControlLabel
