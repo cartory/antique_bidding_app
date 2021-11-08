@@ -1,8 +1,7 @@
+import { createTheme, ThemeProvider } from '@mui/material';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import { LoginPage } from './pages/auth/loginPage'
-
-import { createTheme, ThemeProvider } from '@mui/material';
 
 const theme = createTheme({
   palette: {
@@ -18,6 +17,7 @@ const theme = createTheme({
     divider: '#7C7A7A',
   },
 })
+
 
 const App = () => {
   return (
