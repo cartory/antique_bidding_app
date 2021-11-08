@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
 	Box, Paper,
 	InputAdornment,
@@ -5,17 +6,25 @@ import {
 	TextField, CssBaseline, Button,
 } from '@mui/material'
 
-import {
-	AttachMoney
-} from '@mui/icons-material'
+import { useContext } from 'react'
+import { AttachMoney } from '@mui/icons-material'
+import { useParams, useNavigate } from 'react-router-dom'
 
+import { usePostAPI } from '../../hooks/useFetch'
 import robo_square from '../../assets/robo_hand.svg'
 
-export const SettingsPage = () => {
+export const SettingsPage = ({ context }) => {
+	const { id } = useParams()
+	const navigate = useNavigate()
+
+	const user = useContext(context)
+	id !== user['id'] && navigate('/', { replace: true })
+	let { bot } = user
+
 	return (
 		<Box component="main" sx={{ flexGrow: 1, p: 0, paddingTop: 5 }}>
 			<CssBaseline />
-			<Grid container component="main" sx={{ height: '93vh' }} square>
+			<Grid container component="main" sx={{ height: '93vh' }}>
 				<Grid item xs={12} sm={8} md={5} component={Paper} elevation={0}>
 					<Box
 						sx={{
@@ -31,7 +40,21 @@ export const SettingsPage = () => {
 						</Typography>
 						<Box
 							component="form"
-							noValidate onSubmit={() => { }} sx={{ mt: 1 }}
+							noValidate onSubmit={async (e) => {
+								e.preventDefault()
+								if (isNaN(bot['maximumBidAmount'])) {
+									alert('MaximumBidValue Not a Valid Number')
+								} else {
+									bot['maximumBidAmount'] = Number.parseFloat(bot['maximumBidAmount'])
+									try {
+										bot = await usePostAPI({ endpoint: `bots/${bot['id']}`, body: bot })
+										user['bot'] = bot
+										sessionStorage.setItem('user', JSON.stringify(user))
+									} catch (err) {
+										console.error(err);
+									}
+								}
+							}} sx={{ mt: 1 }}
 						>
 							<p style={{ color: 'grey', fontSize: '75%' }}>
 								<strong style={{ margin: 2, color: 'black' }}>Maximum bid amount</strong><br />
@@ -39,22 +62,23 @@ export const SettingsPage = () => {
 							</p>
 							<TextField
 								size="small"
-								name="email"
 								margin="none"
+								name="maximumBidAmount"
+								defaultValue={user['bot']['maximumBidAmount']}
 								variant="standard"
-								type="tel"
 								style={{ padding: 0 }}
+								onChange={({ target }) => bot[target.name] = target.value}
 								InputProps={{
 									startAdornment: <InputAdornment position="start" children={[<AttachMoney key='bid' />]} />
 								}}
 							/>
 							<br />
 							<br />
-							<p style={{ color: 'grey', fontSize: '75%' }}>
+							{/* <p style={{ color: 'grey', fontSize: '75%' }}>
 								<strong style={{ margin: 2, color: 'black' }}>Bid Alert Notification</strong><br />
 								Get the notification about your reserved bids
-							</p>
-							<TextField
+							</p> */}
+							{/* <TextField
 								size="small"
 								margin="none"
 								name="password"
@@ -62,9 +86,9 @@ export const SettingsPage = () => {
 								variant="standard"
 								style={{ padding: 0 }}
 								InputProps={{
-									endAdornment: <InputAdornment children={[<p key='text' style={{ fontWeight: 'bolder', fontSize: '110%' }} children={['%']} />]} />
+									endAdornment: <InputAdornment position="start" children={[<p key='text' style={{ fontWeight: 'bolder', fontSize: '110%' }} children={['%']} />]} />
 								}}
-							/>
+							/> */}
 							<Button
 								type="submit"
 								fullWidth
