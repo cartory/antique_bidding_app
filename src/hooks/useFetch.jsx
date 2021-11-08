@@ -34,6 +34,25 @@ export const useFetchAPI = ({ endpoint = "", query = {}, delayInMilliseconds = 0
 	return [data, setData]
 }
 
+export const usePostAPI = async ({ endpoint = "", body = {}, method = "POST" }) => {
+	try {
+		const res = await fetch(`${process.env.REACT_APP_API}/api/${endpoint}`, {
+			method,
+			headers: {
+				"Accept": "Application/json",
+				"Content-Type": "Application/json"
+			},
+			body: JSON.stringify(body)
+		})
+
+		return await res.json()
+	} catch (err) {
+		console.error(err);
+	}
+
+	return null
+}
+
 export const useSocket = () => {
 	try {
 		return io(process.env.REACT_APP_API, { transports: ['websocket'] })
