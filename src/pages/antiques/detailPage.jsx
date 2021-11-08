@@ -1,5 +1,3 @@
-/* eslint-disable eqeqeq */
-import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 
 import Countdown from 'react-countdown'
@@ -17,20 +15,24 @@ import {
 
 const { useSocket, useFetchAPI } = require('../../hooks/useFetch')
 
-export const DetailPage = () => {
+const getLastBid = (antique) => {
+	if (!antique.user) {
+		return antique?.startPrice
+	}
+
+	return antique.user['User_Antique']['lastBid']
+}
+
+export const DetailPage = ({ user }) => {
 	const { id } = useParams()
 
 	const socket = useSocket()
 	const navigate = useNavigate()
 
-	const [antique] = useFetchAPI({ endpoint: `antiques/${id}` })
+	const [antique, setAntique] = useFetchAPI({ endpoint: `antiques/${id}` })
 	!antique && navigate('/home', { replace: true })
-
-	// socket.on('bid', ({ lastBid }) => {
-	// 	setDate(lastBid)
-	// })
-
-	console.log(antique?.endDate);
+	
+	socket.on('lastBid', (antiqueResult) => setAntique(antiqueResult))
 
 	return (
 		<Box component="main" sx={{ flexGrow: 1, p: 0, paddingTop: 5 }}>
@@ -62,8 +64,8 @@ export const DetailPage = () => {
 						<Typography component="h2" variant="h6" style={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
 							{antique?.productName}
 						</Typography>
-						<legend style={{ color: 'grey', fontSize: '90%', marginTop: 0 }}>
-							Minimum bid ${antique?.startPrice}
+						<legend style={{ color: 'grey', fontSize: '110%', marginTop: 0, marginBottom: 0 }}>
+							Minimum bid <strong>${antique?.startPrice}</strong>
 						</legend>
 						<Box
 							component="form"
@@ -76,9 +78,9 @@ export const DetailPage = () => {
 							<br />
 							<Grid container direction="row" justifyContent="space-between">
 								<Grid item>
-									<p style={{ color: 'grey', fontSize: '80%', textAlign: 'start' }}>
-										<strong style={{ margin: 2, color: 'black' }}>Last Bid Made</strong><br />
-										{antique?.startPrice}
+									<p style={{ color: 'grey', fontSize: '90%', textAlign: 'start' }}>
+										<strong style={{ margin: 2, color: 'black' }}>Last Bid</strong><br />
+										{!antique.user ? `${getLastBid(antique)}$` : `${getLastBid(antique)}$ - ${antique['user']['email']}`}
 									</p>
 								</Grid>
 								<Grid item>
@@ -99,10 +101,15 @@ export const DetailPage = () => {
 							<Button
 								fullWidth
 								variant="contained"
-								children={['Place a Bid']}
+								children={['Place a Bid +5$']}
 								sx={{ mt: 3, mb: 2, textTransform: 'capitalize' }}
 								onClick={() => {
-									socket.emit('bid', { lastDate: Date.now() })
+									socket.emit('bid', {
+										Userid: user.id,
+										Antiqueid: Number.parseInt(id),
+										endDate: Date.parse(antique?.endDate),
+										price: getLastBid(antique) + 5,
+									})
 								}}
 							/>
 							<br />
